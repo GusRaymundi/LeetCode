@@ -1,0 +1,77 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <math.h>
+
+typedef struct {
+    bool *seats;
+    int size;
+    int min;
+} SeatManager;
+
+SeatManager* seatManagerCreate(int n) {
+    SeatManager *obj = malloc(sizeof(SeatManager));
+    obj->seats = calloc((n+1), sizeof(bool)); // Inicializa todos os lugares como desocupados
+    obj->size = n + 1; // Tamanho total (inclui o índice 0)
+    obj->min = 1; // O menor assento disponível começa no 1
+    return obj;
+}
+
+int seatManagerReserve(SeatManager* obj) {
+    int ret = obj->min; // A primeira posição disponível
+    obj->seats[ret] = true; // Marca como ocupado
+
+    // Encontra o próximo assento disponível
+    while (obj->min < obj->size && obj->seats[obj->min] != false)
+        obj->min++;
+
+    return ret;
+}
+
+void seatManagerUnreserve(SeatManager* obj, int seatNumber) {
+    obj->seats[seatNumber] = false; // Desmarca o assento como desocupado
+    obj->min = fmin(obj->min, seatNumber); // Atualiza o menor assento disponível
+    return;
+}
+
+void seatManagerFree(SeatManager* obj) {
+    free(obj->seats);
+    free(obj);
+}
+
+int main() {
+    // Criando o SeatManager
+    SeatManager* seatManager = seatManagerCreate(5);
+    
+    // Array para armazenar as saídas
+    int outputIndex = 0;
+    printf("[");
+    
+    // Simulação das chamadas e armazenando os resultados
+    printf("null,"); // SeatManager (não há retorno)
+    
+    // Reserve
+    printf("%d,", seatManagerReserve(seatManager)); // reserve
+    printf("%d,", seatManagerReserve(seatManager)); // reserve
+    
+    // Unreserve
+    seatManagerUnreserve(seatManager, 2); // unreserve
+    printf("null,"); // A operação unreserve não retorna um valor
+    
+    // Reserve
+    printf("%d,", seatManagerReserve(seatManager)); // reserve
+    printf("%d,", seatManagerReserve(seatManager)); // reserve
+    printf("%d,", seatManagerReserve(seatManager)); // reserve
+    printf("%d,", seatManagerReserve(seatManager)); // reserve
+    
+    // Unreserve
+    seatManagerUnreserve(seatManager, 5); // unreserve
+    printf("null"); // A operação unreserve não retorna um valor
+    
+    printf("]\n");
+    
+    // Liberando a memória
+    seatManagerFree(seatManager);
+    
+    return 0;
+}
