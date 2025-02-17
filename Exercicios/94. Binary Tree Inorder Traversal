@@ -1,0 +1,47 @@
+#include <stdlib.h>
+
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     struct TreeNode *left;
+ *     struct TreeNode *right;
+ * };
+ */
+
+void traverse(struct TreeNode* root, int** result, int* index, int* capacity) {
+    if (root == NULL) {
+        return;
+    }
+
+    traverse(root->left, result, index, capacity);
+
+    if (*index >= *capacity) {
+
+        *capacity *= 2;
+        *result = realloc(*result, (*capacity) * sizeof(int));
+    }
+    (*result)[*index] = root->val;
+    (*index)++;
+
+    traverse(root->right, result, index, capacity);
+}
+
+int* inorderTraversal(struct TreeNode* root, int* returnSize) {
+    if (root == NULL) {
+        *returnSize = 0;
+        return NULL;
+    }
+
+    int capacity = 10; 
+    int* result = (int*)malloc(capacity * sizeof(int));
+    int index = 0; 
+
+    traverse(root, &result, &index, &capacity);
+
+    *returnSize = index;
+
+    result = realloc(result, (*returnSize) * sizeof(int));
+
+    return result;
+}
