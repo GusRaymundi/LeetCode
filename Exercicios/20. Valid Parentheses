@@ -1,0 +1,32 @@
+#define nullptr NULL
+
+bool comp(char l, char r) {
+    return ((l == '(' && r == ')') || (l == '[' && r == ']') || (l == '{' && r == '}'));
+}
+
+char* helper(char* s) {
+    char c = s[0];
+    if (c == '\0') {
+        return s;
+    }
+
+    if (c == ')' || c == ']' || c == '}') {
+        return s;
+    }
+
+    char* in = helper(s + 1);
+    if (in == nullptr) {
+        return in;
+    }
+
+    if (!comp(c, in[0])) {
+        return nullptr;
+    }
+    
+    return helper(in + 1);
+}
+
+bool isValid(char* s) {
+    char* p = helper(s);
+    return p != nullptr && p[0] == '\0';
+}
