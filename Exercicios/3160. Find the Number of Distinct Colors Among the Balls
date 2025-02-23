@@ -1,0 +1,128 @@
+int compareIndexedQueriesIndexes(const void * a, const void * b) {
+    const int *entry1 = *((const int **) a);
+    const int *entry2 = *((const int **) b);
+
+    return entry1[0] - entry2[0];
+}
+
+int compareIndexedQueriesBalls(const void * a, const void * b) {
+    const int *entry1 = *((const int **) a);
+    const int *entry2 = *((const int **) b);
+
+    return entry1[1] - entry2[1];
+}
+
+int compareIndexedQueriesColors(const void * a, const void * b) {
+    const int *entry1 = *((const int **) a);
+    const int *entry2 = *((const int **) b);
+
+    return entry1[2] - entry2[2];
+}
+
+int *queryResults(int limit, int **queries, int queriesSize, int *queriesColSize, int *returnSize)
+{
+    const int n = queriesSize;
+
+    // 1. Creates an array of queries with indices (to sort back to the original order after compresion)
+
+    int **indexedQueries = malloc(n * sizeof(*indexedQueries));
+
+    for (int i = 0; i < n; ++i) {
+        indexedQueries[i] = malloc(sizeof(int[3])); 
+
+        indexedQueries[i][0] = i;
+        indexedQueries[i][1] = queries[i][0];
+        indexedQueries[i][2] = queries[i][1];
+    }
+
+    // 2. Compress the values of the balls
+
+    qsort(indexedQueries, n, sizeof(*indexedQueries), compareIndexedQueriesBalls);
+
+    int newLastBall = 1;
+    int oldLastBall = indexedQueries[0][1];
+
+    indexedQueries[0][1] = newLastBall;
+
+    for (int i = 1; i < n; ++i) {
+        if (indexedQueries[i][1] != oldLastBall) {
+            ++newLastBall;
+        }
+
+        oldLastBall = indexedQueries[i][1];
+
+        indexedQueries[i][1] = newLastBall;
+    }
+
+    // 3. Compress the values of the balls colors
+
+    qsort(indexedQueries, n, sizeof(*indexedQueries), compareIndexedQueriesColors);
+
+    int newLastColor = 1;
+    int oldLastColor = indexedQueries[0][2];
+
+    indexedQueries[0][2] = newLastColor;
+
+    for (int i = 1; i < n; ++i) {
+        if (indexedQueries[i][2] != oldLastColor) {
+            ++newLastColor;
+        }
+
+        oldLastColor = indexedQueries[i][2];
+
+        indexedQueries[i][2] = newLastColor;
+    }
+
+    // 4. Populates the result array
+
+    qsort(indexedQueries, n, sizeof(*indexedQueries), compareIndexedQueriesIndexes);
+
+    int *const result = malloc(n * sizeof(*result));
+
+    int currentColorsCount = 0;
+
+    int ballsColors[n+1];
+    int colorsCount[n+1];
+
+    memset(ballsColors, 0, sizeof(ballsColors));
+    memset(colorsCount, 0, sizeof(colorsCount));
+
+    for (int i = 0; i < n; ++i) {
+        const int b = indexedQueries[i][1];
+        const int c = indexedQueries[i][2];
+
+        if (ballsColors[b] != c) {
+            if (colorsCount[c] == 0) {
+                ++currentColorsCount;
+            }
+
+            ++colorsCount[c];
+
+            if (ballsColors[b] != 0) {
+                --colorsCount[ballsColors[b]];
+
+                if (colorsCount[ballsColors[b]] == 0) {
+                    --currentColorsCount;
+                }
+            }
+        }
+
+        ballsColors[b] = c;
+
+        result[i] = currentColorsCount;
+    }
+
+    // 5. Frees the allocated data
+    
+    for (int i = 0; i < n; ++i) {
+        free(indexedQueries[i]);
+    }
+
+    free(indexedQueries);
+
+    // 6. Returns the result
+
+    *returnSize = n;
+
+    return result;
+}
