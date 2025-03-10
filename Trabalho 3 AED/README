@@ -1,0 +1,36 @@
+
+Gustavo Raymundi Nygaard - M2
+
+TRABALHO 3
+
+# 865. Smallest Subtree with all the Deepest Nodes
+
+Este repositório contém a implementação de uma solução para o problema "Smallest Subtree with all the Deepest Nodes". 
+O objetivo é encontrar a subárvore que contém todos os nós mais profundos da árvore.
+
+-------------------------------------------------------------------------
+### 3 Exemplos que testei com sucesso
+
+**Entrada**:
+
+[3,5,1,6,2,0,8,null,null,7,4]
+
+**Saída**:
+
+[2,7,4]
+-------------------------------------------------------------------------
+**Entrada - 2**:
+
+[1]
+
+**Saída**:
+
+[1]
+-------------------------------------------------------------------------
+**Entrada - 3**:
+
+[0,1,3,nulo,2]
+
+**Saída**:
+
+[2]
