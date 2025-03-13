@@ -1,0 +1,12 @@
+int searchInsert(int* nums, int numsSize, int target) {
+    int curr_idx;
+
+    /*  target = nums[] ->  number hit, return current index
+        target < nums[] ->  number NOT hit, move to next index */
+    for (curr_idx = 0; curr_idx < numsSize; curr_idx++) {
+        if (target <= nums[curr_idx])
+            break;
+    }
+
+    return curr_idx;
+}
